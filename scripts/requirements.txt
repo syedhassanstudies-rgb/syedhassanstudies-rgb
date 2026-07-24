@@ -1,0 +1,6 @@
+pillow
+opencv-python-headless
+svgwrite
+requests
+rembg
+onnxruntime
