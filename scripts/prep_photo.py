@@ -1,54 +1,46 @@
+"""
+Prepare a portrait photo for clean ASCII conversion:
+  1. remove the background (rembg) so the subject is isolated
+  2. boost LOCAL contrast (CLAHE) so a flatly-lit face gains highlights and
+     shadows -- this is what turns a dark blob into a recognizable face
+  3. composite the subject onto pure white so the background reads as blank
+     (white -> spaces in the ascii ramp)
+
+Output: source-prepped.png (grayscale), consumed by make_ascii_svg.py.
+Run once whenever the source photo changes; the ascii SVG itself is static.
+
+    python scripts/prep_photo.py <input.jpg> [output.png]
+"""
+import os
+import sys
+
 import cv2
 import numpy as np
 from PIL import Image
-from rembg import remove, new_session
-import os
+from rembg import remove
 
-def prep_photo():
-    input_path = 'source-photo.jpg'
-    output_path = 'source-prepped.png'
+HERE = os.path.dirname(os.path.abspath(__file__))
+INP = sys.argv[1] if len(sys.argv) > 1 else os.path.join(HERE, "..", "source-photo.jpg")
+OUT = sys.argv[2] if len(sys.argv) > 2 else os.path.join(HERE, "..", "source-prepped.png")
 
-    if not os.path.exists(input_path):
-        print(f"Error: {input_path} not found in root directory!")
-        return
+# 1. cut out the subject
+cut = remove(Image.open(INP).convert("RGBA"))
+rgb = np.array(cut.convert("RGB"))
+alpha = np.array(cut.split()[-1])                 # 0 = background
 
-    print("Stripping background with lightweight u2netp model...")
-    session = new_session("u2netp")
-    
-    with open(input_path, 'rb') as i:
-        input_data = i.read()
-        output_data = remove(input_data, session=session)
-        
-    with open('source-no-bg.png', 'wb') as o:
-        o.write(output_data)
+# 2. local-contrast the luminance (CLAHE)
+gray = cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY)
+clahe = cv2.createCLAHE(clipLimit=2.6, tileGridSize=(8, 8))
+gray = clahe.apply(gray)
 
-    # Open with PIL for cropping
-    img_pil = Image.open('source-no-bg.png').convert('RGBA')
-    w, h = img_pil.size
-    min_dim = min(w, h)
-    
-    # Center crop
-    left = (w - min_dim) // 2
-    top = (h - min_dim) // 2
-    right = left + min_dim
-    bottom = top + min_dim
-    
-    cropped = img_pil.crop((left, top, right, bottom))
-    resized = cropped.resize((460, 460), Image.Resampling.LANCZOS)
-    
-    # Convert background transparent pixels to black before CLAHE
-    background = Image.new('RGBA', resized.size, (0, 0, 0, 255))
-    alpha_composite = Image.alpha_composite(background, resized).convert('L')
-    
-    # Convert to OpenCV image for CLAHE
-    gray = np.array(alpha_composite)
-    clahe = cv2.createCLAHE(clipLimit=2.5, tileGridSize=(8, 8))
-    enhanced = clahe.apply(gray)
-    
-    cv2.imwrite(output_path, enhanced)
-    if os.path.exists('source-no-bg.png'):
-        os.remove('source-no-bg.png')
-    print("source-prepped.png successfully generated with background removal & CLAHE.")
+# a touch of global lift so the face sits in the sparse end of the ramp
+gray = cv2.convertScaleAbs(gray, alpha=1.05, beta=18)
 
-if __name__ == "__main__":
-    prep_photo()
+# 3. paste onto white using the alpha mask (feathered a hair to avoid a halo)
+mask = (alpha.astype(np.float32) / 255.0)
+mask = cv2.GaussianBlur(mask, (0, 0), 1.0)
+out = gray.astype(np.float32) * mask + 255.0 * (1.0 - mask)
+out = np.clip(out, 0, 255).astype(np.uint8)
+
+Image.fromarray(out, mode="L").save(OUT)
+print("wrote", OUT, out.shape)
