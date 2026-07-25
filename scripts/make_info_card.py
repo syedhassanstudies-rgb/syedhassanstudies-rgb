@@ -6,6 +6,10 @@ highlights -- NOT GitHub stats (the contribution graph covers those).
 Static content, hand-authored below. Lines fade/slide in on a short stagger so
 it feels like the panel is printing alongside the portrait. STATIC=1 emits the
 frozen state for Quick Look previews.
+
+NOTE on this fork: card height is computed from the actual row content instead
+of a hardcoded constant, since the row count here differs slightly from the
+upstream original (three highlights instead of two).
 """
 import html
 import os
@@ -14,7 +18,9 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "..", "info-card.svg")
 STATIC = bool(os.environ.get("STATIC"))
 
-W, H = 480, 376
+USER_HANDLE = "syed"
+
+W = 480
 PAD = 20
 TITLEBAR_H = 30
 KEY_X = PAD
@@ -26,29 +32,34 @@ BG2 = "#111722"
 FRAME = "#30363d"
 MUTED = "#7d8590"
 INK = "#c9d1d9"
-KEY = "#ffa657"
-SECTION = "#58a6ff"
+KEY = "#ffa657"      # orange keys (matches Andrew)
+SECTION = "#58a6ff"  # blue section headers
 GREEN = "#3fb950"
 ACCENT = "#22d3ee"
 
+# content model: tuples describing each row
+# ("host",)                    -> "hassan@github" + rule
+# ("kv", key, value)           -> orange key + light value
+# ("sec", title)               -> blue "— title —" rule
+# ("bul", text)                -> green dot + light text
+# ("gap",)                     -> vertical space
 ROWS = [
     ("host",),
-    ("kv", "Now", "IT Undergraduate @ QUEST Nawabshah"),
-    ("kv", "Focus", "Backend Development + LLM Engineering"),
-    ("kv", "Prev", "Backend Development Intern @ Decode Labs"),
-    ("kv", "Also", "Web Development Intern @ Arch Technologies"),
-    ("kv", "Edu", "BSIT, QUEST Nawabshah '28"),
+    ("kv", "Now", "Building UniMind AI (RAG + Multi-LLM)"),
+    ("kv", "Prev", "Backend Dev Intern @ Decode Labs"),
+    ("kv", "Also", "Web Dev Intern @ Arch Technologies"),
+    ("kv", "Edu", "BSIT, QUEST, Nawabshah '28"),
     ("gap",),
     ("sec", "Stack"),
-    ("kv", "Languages", "Python, C++, JavaScript, SQL"),
+    ("kv", "Frontend", "React, Tailwind CSS, Framer Motion"),
     ("kv", "Backend", "FastAPI, SQLAlchemy, PostgreSQL"),
-    ("kv", "AI / ML", "RAG, FAISS, Gemini, Groq"),
-    ("kv", "Tools", "Git/GitHub, Docker, AWS, Nginx"),
+    ("kv", "AI / ML", "RAG, FAISS, Gemini API, Groq API"),
+    ("kv", "Cloud", "AWS (EC2), Docker, Nginx, Vercel"),
     ("gap",),
     ("sec", "Highlights"),
-    ("bul", "Led UniMind AI and rebuilt it production-style"),
-    ("bul", "Shipped 3 FastAPI projects during internship"),
-    ("bul", "Top Performer in GenAI training"),
+    ("bul", "Led 5-person team @ GenAI Hackathon"),
+    ("bul", "Top Performer \u2014 HEC GenAI Cohort"),
+    ("bul", "Solo-shipped UniMind AI on AWS"),
 ]
 
 
@@ -67,6 +78,48 @@ def rise(inner, i):
             f'begin="{delay:.2f}s" dur="0.4s" fill="freeze" calcMode="spline" keySplines="0.2 0.8 0.2 1"/></g>')
 
 
+def build_rows(rows):
+    """Lay out rows starting at the fixed content top, returning (parts, bottom_y)."""
+    parts = []
+    y = TITLEBAR_H + 30
+    for i, row in enumerate(rows):
+        kind = row[0]
+        if kind == "gap":
+            y += LINE_H * 0.5
+            continue
+        if kind == "host":
+            inner = (f'<text x="{KEY_X}" y="{y:.1f}" font-size="14" font-weight="700">'
+                     f'<tspan fill="{GREEN}">{USER_HANDLE}</tspan><tspan fill="{MUTED}">@</tspan>'
+                     f'<tspan fill="{ACCENT}">github</tspan></text>'
+                     f'<line x1="{KEY_X+96}" y1="{y-4:.1f}" x2="{W-PAD}" y2="{y-4:.1f}" '
+                     f'stroke="{FRAME}" stroke-opacity="0.8"/>')
+        elif kind == "sec":
+            title = esc(row[1])
+            inner = (f'<text x="{KEY_X}" y="{y:.1f}" fill="{SECTION}" font-size="12.5" font-weight="700">'
+                     f'&#8212; {title}</text>'
+                     f'<line x1="{KEY_X + 12 + len(row[1])*8}" y1="{y-4:.1f}" x2="{W-PAD}" y2="{y-4:.1f}" '
+                     f'stroke="{FRAME}" stroke-opacity="0.8"/>')
+        elif kind == "kv":
+            key, val = esc(row[1]), esc(row[2])
+            inner = (f'<text x="{KEY_X}" y="{y:.1f}" fill="{KEY}" font-size="12.5" font-weight="700">{key}</text>'
+                     f'<text x="{VAL_X}" y="{y:.1f}" fill="{INK}" font-size="12.5">{val}</text>')
+        elif kind == "bul":
+            txt = esc(row[1])
+            inner = (f'<circle cx="{KEY_X+3}" cy="{y-4:.1f}" r="2.5" fill="{GREEN}"/>'
+                     f'<text x="{KEY_X+14}" y="{y:.1f}" fill="{INK}" font-size="12.5">{txt}</text>')
+        else:
+            continue
+        parts.append(rise(inner, i))
+        y += LINE_H
+    return parts, y
+
+
+# first pass (no STATIC influence on layout) just to find content bottom -> H
+_, content_bottom = build_rows(ROWS)
+H = int(content_bottom + PAD * 0.9)
+
+row_parts, y = build_rows(ROWS)
+
 parts = [
     f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" '
     f'font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">',
@@ -80,41 +133,11 @@ parts = [
 for i, dotcol in enumerate(["#ff5f56", "#ffbd2e", "#27c93f"]):
     parts.append(f'<circle cx="{PAD + i*16}" cy="{TITLEBAR_H/2}" r="5" fill="{dotcol}"/>')
 parts.append(f'<text x="{W/2}" y="{TITLEBAR_H/2 + 4}" fill="{MUTED}" font-size="12" '
-             f'text-anchor="middle">syed@github: ~$ neofetch</text>')
+             f'text-anchor="middle">{USER_HANDLE}@github: ~$ neofetch</text>')
 
-y = TITLEBAR_H + 30
-for i, row in enumerate(ROWS):
-    kind = row[0]
-    if kind == "gap":
-        y += LINE_H * 0.5
-        continue
-    if kind == "host":
-        inner = (f'<text x="{KEY_X}" y="{y:.1f}" font-size="14" font-weight="700">'
-                 f'<tspan fill="{GREEN}">syed</tspan><tspan fill="{MUTED}">@</tspan>'
-                 f'<tspan fill="{ACCENT}">github</tspan></text>'
-                 f'<line x1="{KEY_X+96}" y1="{y-4:.1f}" x2="{W-PAD}" y2="{y-4:.1f}" '
-                 f'stroke="{FRAME}" stroke-opacity="0.8"/>')
-    elif kind == "sec":
-        title = esc(row[1])
-        inner = (f'<text x="{KEY_X}" y="{y:.1f}" fill="{SECTION}" font-size="12.5" font-weight="700">'
-                 f'&#8212; {title}</text>'
-                 f'<line x1="{KEY_X + 12 + len(row[1])*8}" y1="{y-4:.1f}" x2="{W-PAD}" y2="{y-4:.1f}" '
-                 f'stroke="{FRAME}" stroke-opacity="0.8"/>')
-    elif kind == "kv":
-        key, val = esc(row[1]), esc(row[2])
-        inner = (f'<text x="{KEY_X}" y="{y:.1f}" fill="{KEY}" font-size="12.5" font-weight="700">{key}</text>'
-                 f'<text x="{VAL_X}" y="{y:.1f}" fill="{INK}" font-size="12.5">{val}</text>')
-    elif kind == "bul":
-        txt = esc(row[1])
-        inner = (f'<circle cx="{KEY_X+3}" cy="{y-4:.1f}" r="2.5" fill="{GREEN}"/>'
-                 f'<text x="{KEY_X+14}" y="{y:.1f}" fill="{INK}" font-size="12.5">{txt}</text>')
-    else:
-        continue
-    parts.append(rise(inner, i))
-    y += LINE_H
-
+parts.extend(row_parts)
 parts.append("</svg>")
 svg = "".join(parts)
-with open(OUT, "w", encoding="utf-8") as f:
+with open(OUT, "w") as f:
     f.write(svg)
-print("wrote", OUT, len(svg), "bytes")
+print("wrote", OUT, len(svg), "bytes;", W, "x", H, "content_bottom", round(y))

@@ -21,7 +21,10 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 # defaults to the prepped grayscale image (see prep_photo.py), which already has
 # the background removed + local contrast applied.
 SRC = sys.argv[1] if len(sys.argv) > 1 else os.path.join(HERE, "..", "source-prepped.png")
-OUT = sys.argv[2] if len(sys.argv) > 2 else os.path.join(HERE, "..", "avi-ascii.svg")
+OUT = sys.argv[2] if len(sys.argv) > 2 else os.path.join(HERE, "..", "syed-ascii.svg")
+
+USER_HANDLE = "syed"       # short handle used in terminal prompts
+FULL_NAME = "Syed Hassan Ahmed Zaidi"
 
 COLS = 100
 ROWS = 53
@@ -29,8 +32,6 @@ CELL_W = 8
 CELL_H = 15
 RAMP = " .`:-=+*cs#%@"  # bright(sparse) -> dark(dense); leading space clears bg
 
-# the prepped image already has bg removed + CLAHE local contrast, so only
-# light global tuning is needed here.
 CONTRAST = 1.05
 BRIGHTNESS = 1.0
 GAMMA = 1.18          # >1 brightens mids -> face lands in sparser chars
@@ -103,7 +104,7 @@ parts.append(f'<line x1="0" y1="{TITLEBAR_H}" x2="{CANVAS_W}" y2="{TITLEBAR_H}" 
 for i, dotcol in enumerate(["#ff5f56", "#ffbd2e", "#27c93f"]):
     parts.append(f'<circle cx="{PAD + i*16}" cy="{TITLEBAR_H/2}" r="5" fill="{dotcol}"/>')
 parts.append(f'<text x="{CANVAS_W/2}" y="{TITLEBAR_H/2 + 4}" fill="{TITLE_TEXT}" font-size="12" '
-             f'text-anchor="middle">avi@github: ~$ ./portrait.sh</text>')
+             f'text-anchor="middle">{USER_HANDLE}@github: ~$ ./portrait.sh</text>')
 
 # one <text> per row (single color -> no per-char markup, tiny file)
 font_size = CELL_H * 0.86
@@ -137,9 +138,11 @@ for ry, line in enumerate(rows_txt):
 status_line_y = TITLEBAR_H + ART_H + PAD * 0.35
 status_y = status_line_y + 19
 parts.append(f'<line x1="0" y1="{status_line_y:.1f}" x2="{CANVAS_W}" y2="{status_line_y:.1f}" stroke="{FRAME}"/>')
+whoami_text = f'{USER_HANDLE}@github:~$ whoami '
 parts.append(f'<text x="{PAD}" y="{status_y:.1f}" fill="{TITLE_TEXT}" font-size="13">'
-             f'avi@github:~$ whoami <tspan fill="{INK}">Avi Vashishta</tspan></text>')
-parts.append(f'<rect x="{PAD+196}" y="{status_y-12:.1f}" width="8" height="14" fill="{INK}">'
+             f'{html.escape(whoami_text)}<tspan fill="{INK}">{html.escape(FULL_NAME)}</tspan></text>')
+cursor_x = PAD + len(whoami_text) * 9.333  # monospace advance ratio back-derived from the original fixed offset (196px / 21 chars)
+parts.append(f'<rect x="{cursor_x:.1f}" y="{status_y-12:.1f}" width="8" height="14" fill="{INK}">'
              f'<animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.5;0.51;1" '
              f'dur="1s" repeatCount="indefinite"/></rect>')
 

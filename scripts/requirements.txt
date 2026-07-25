@@ -1,7 +1,7 @@
 requests==2.32.3
 beautifulsoup4==4.12.3
-Pillow
-numpy
-opencv-python-headless
-rembg[cpu]
-onnxruntime
+
+# Only the two packages above are needed by the GitHub Action (it just scrapes
+# contributions + renders the heatmap SVG). If you want to regenerate the
+# ASCII portrait locally from a new photo, prep_photo.py / make_ascii_svg.py
+# additionally need: opencv-python, numpy, pillow

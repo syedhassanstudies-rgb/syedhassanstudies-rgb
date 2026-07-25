@@ -1,39 +1,48 @@
-<div align="center">
+<!--
+  Hi, I'm Hassan 👋
 
-<!-- hero: monochrome ASCII portrait beside a neofetch-style info panel.
-     regenerate portrait: python scripts/prep_photo.py <photo> &&
-     python scripts/make_ascii_svg.py ; info panel: python scripts/make_info_card.py -->
+  This README is generated, not hand-typed:
+    - contrib-heatmap.svg is rebuilt daily from real, live GitHub contribution
+      data (scripts/fetch_contributions.py -> scripts/render_heatmap_svg.py),
+      committed back automatically by .github/workflows/update-profile-art.yml
+    - syed-ascii.svg is a real photo (background pre-removed) run through a
+      contrast + ASCII-density pipeline (scripts/prep_photo.py -> make_ascii_svg.py)
+    - info-card.svg is a small "neofetch"-style content model
+      (scripts/make_info_card.py)
 
-<!-- animated contribution graph: real data, boxes reveal cell by cell
-     (regenerated daily by .github/workflows/update-profile-art.yml) -->
+  All three are static SVGs with embedded SMIL/CSS animations, so they
+  animate once on load right here in the README -- no JS required, GitHub
+  renders it natively.
+-->
 
-<h3><code>syed@github ~ $ ./contributions.sh</code></h3>
+<h3>$ ./contributions.sh</h3>
 
-<img src="./contrib-heatmap.svg" width="860" alt="Syed Hassan's GitHub contribution graph — auto-refreshed daily" />
+<p>
+  <img src="./contrib-heatmap.svg" alt="Hassan's GitHub contribution heatmap, refreshed daily" width="100%" />
+</p>
 
-<br>
-<br>
-
-<h3><code>syed@github ~ $ whoami</code></h3>
+<h3>$ whoami</h3>
 
 <table>
-<tr>
-<td valign="top"><img src="./avi-ascii.svg" width="370" alt="Syed Hassan — ASCII portrait" /></td>
-<td valign="top"><img src="./info-card.svg" width="490" alt="Syed Hassan — experience, stack, highlights" /></td>
-</tr>
+  <tr>
+    <td><img src="./syed-ascii.svg" alt="ASCII art portrait of Syed Hassan" /></td>
+    <td valign="top"><img src="./info-card.svg" alt="Syed Hassan's neofetch-style info card" /></td>
+  </tr>
 </table>
 
-<br>
-<br>
-
-<h3><code>syed@github ~ $ ./links.sh</code></h3>
+<h3>$ ./links.sh</h3>
 
 <p><b>IT Undergraduate at QUEST Nawabshah | Backend Developer | LLM Engineer | Python · FastAPI · RAG | Game Dev Enthusiast</b></p>
 
-[![GitHub](https://img.shields.io/badge/GitHub-syedhassanstudies--rgb-0d1117?style=for-the-badge&logo=github&logoColor=white)](https://github.com/syedhassanstudies-rgb)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-syed--hassan--ahmed--zaidi-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/syed-hassan-ahmed-zaidi-38127238a/)
-[![Instagram](https://img.shields.io/badge/Instagram-hassan.ymk-E4405F?style=for-the-badge&logo=instagram&logoColor=white)](https://www.instagram.com/hassan.ymk)
-
-<br>
-
-</div>
+<p>
+  <a href="https://github.com/syedhassanstudies-rgb">
+    <img src="https://img.shields.io/badge/GitHub-syedhassanstudies--rgb-0d1117?style=flat-square&logo=github&logoColor=white" alt="GitHub" />
+  </a>
+  <a href="https://www.linkedin.com/in/syed-hassan-ahmed-zaidi-38127238a/">
+    <img src="https://img.shields.io/badge/LinkedIn-syed--hassan--ahmed--zaidi-0A66C2?style=flat-square&logo=linkedin&logoColor=white" alt="LinkedIn" />
+  </a>
+  <a href="https://www.instagram.com/hassan.ymk">
+    <img src="https://img.shields.io/badge/Instagram-hassan.ymk-E4405F?style=flat-square&logo=instagram&logoColor=white" alt="Instagram" />
+  </a>
+  <!-- send a portfolio URL or a live-demo link and I'll add a matching badge here -->
+</p>
