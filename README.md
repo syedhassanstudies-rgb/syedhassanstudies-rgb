@@ -25,7 +25,7 @@
 
 <table>
   <tr>
-    <td><img src="./syed-ascii.svg" alt="ASCII art portrait of Syed Hassan" /></td>
+    <td><img src="./syed-ascii.svg" alt="ASCII art portrait of Syed Hassan" width="360" /></td>
     <td valign="top"><img src="./info-card.svg" alt="Syed Hassan's neofetch-style info card" /></td>
   </tr>
 </table>
