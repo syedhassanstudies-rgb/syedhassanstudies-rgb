@@ -1,17 +1,17 @@
 {
   "username": "syedhassanstudies-rgb",
-  "generated_at": "2026-07-27T10:11:28Z",
+  "generated_at": "2026-07-28T09:07:11Z",
   "range": {
     "start": "2025-07-27",
-    "end": "2026-07-27"
+    "end": "2026-07-28"
   },
-  "total_contributions": 152,
-  "active_days": 39,
-  "avg_per_active_day": 3.9,
+  "total_contributions": 144,
+  "active_days": 38,
+  "avg_per_active_day": 3.8,
   "current_streak": {
-    "length": 4,
-    "start": "2026-07-24",
-    "end": "2026-07-27"
+    "length": 0,
+    "start": null,
+    "end": null
   },
   "longest_streak": {
     "length": 6,
@@ -65,15 +65,15 @@
     },
     {
       "month": "2026-05",
-      "total": 28
-    },
-    {
-      "month": "2026-06",
       "total": 26
     },
     {
+      "month": "2026-06",
+      "total": 25
+    },
+    {
       "month": "2026-07",
-      "total": 79
+      "total": 74
     }
   ],
   "days": [
@@ -1231,7 +1231,7 @@
     },
     {
       "date": "2026-05-11",
-      "count": 3
+      "count": 4
     },
     {
       "date": "2026-05-12",
@@ -1263,11 +1263,11 @@
     },
     {
       "date": "2026-05-19",
-      "count": 3
+      "count": 2
     },
     {
       "date": "2026-05-20",
-      "count": 4
+      "count": 2
     },
     {
       "date": "2026-05-21",
@@ -1351,7 +1351,7 @@
     },
     {
       "date": "2026-06-10",
-      "count": 5
+      "count": 4
     },
     {
       "date": "2026-06-11",
@@ -1531,15 +1531,19 @@
     },
     {
       "date": "2026-07-25",
-      "count": 3
+      "count": 1
     },
     {
       "date": "2026-07-26",
-      "count": 3
+      "count": 2
     },
     {
       "date": "2026-07-27",
-      "count": 2
+      "count": 0
+    },
+    {
+      "date": "2026-07-28",
+      "count": 0
     }
   ]
 }
